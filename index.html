@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>BAG</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+</head>
+<body>
+<!-- TODO enhance user experience x), make the acronym query customizable (lang for example, subject maybe too ? (later))-->
+	<form id="form" action="">
+		<input id="input" type="text">
+		<input type="submit" value="Acronymyze !">		
+	</form>
+	<p id="result"></p>
+	<script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="assets/js/main.js"></script>
+	<script>
+		$(function(){
+			$("#form").submit(
+				function(){
+					$("#result").text(getAcronym($("#input").val()));
+					return false;
+				}
+			);
+		});
+	</script>
+</body>
+</html>
