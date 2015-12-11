@@ -95,25 +95,35 @@ var dict = {
 	 * Insert a Word Object in the dictionary, the Word will be indexed
 	 * @param  {Word} word 	The word to insert into the dictionary
 	 */
-	insert: function(word){
-		if(word instanceof Word){
-			if(!words[word.lang])
-				words[word.lang] = [];
-			if(!words[word.lang][word.first()])
-				words[word.lang][word.first()] = [];
-			if(!containsWord(words[word.lang][word.first()], word))
-				words[word.lang][word.first()].push(word);
+	insert: function(wordToInsert){
+		if(wordToInsert instanceof Word){
+			if(!words[wordToInsert.lang])
+				words[wordToInsert.lang] = [];
+			if(!words[wordToInsert.lang][wordToInsert.first()])
+				words[wordToInsert.lang][wordToInsert.first()] = [];
+			if(!containsWord(words[wordToInsert.lang][wordToInsert.first()], wordToInsert))
+				words[wordToInsert.lang][wordToInsert.first()].push(wordToInsert);
 		}
 	},
 	/**
 	 * Remove a Word Object from the dictionary
 	 * @param  {Word} word The Word to remove
+	 * @return {boolean} True if the element had been removed, else False
 	 */
-	remove: function(word){
-		if(word instanceof Word){
-			if(words[word.lang] && words[word.lang][word.first()] && containsWord(words[word.lang][word.first()], word))
-				words[word.lang][word.first()].pop(word);
+	remove: function(wordToRemove){
+		if(wordToRemove instanceof Word){
+			if(words[wordToRemove.lang] && words[wordToRemove.lang][wordToRemove.first()] && containsWord(words[wordToRemove.lang][wordToRemove.first()], wordToRemove)){
+				var wordArray = words[wordToRemove.lang][wordToRemove.first()];
+				var i = wordArray.length
+				while(i--){
+					if (wordArray[i].equals(wordToRemove)) {
+						wordArray.splice(i,1);
+					};
+				}
+				return true;
+			}
 		}
+		return false;
 	},
 	/**
 	 * Give a random Word from the dictionary beginning with the given letter
@@ -121,6 +131,14 @@ var dict = {
 	 * @return {Word}        	A Word beginning with the letter
 	 */
 	getRandomWord: function(letter){
+		if (!words[userLang][letter]) {
+			alert("There is no word starting with '"+letter+"' available.");
+			return null;
+		}
+		else if(words[userLang][letter].length == 0){
+			alert("There is not enough words starting with '"+letter+"' available.");
+			return null;
+		}
 		return words[userLang][letter][getRandomIndex(words[userLang][letter].length)];
 	}
 };
@@ -221,10 +239,17 @@ var getRandomElement = function(array){
  */
 var getAcronym = function(text){
 	var result = [];
+	var removedWords = [];
 	for (var i = 0; i < text.length; i++) {
 		console.log("\nWord for "+text[i].toUpperCase()+", position : "+i);
 		// find new word
 		var word = dict.getRandomWord(text[i].toUpperCase());
+		if(word == null){
+			result = [];
+			break;
+		}
+		dict.remove(word);
+		removedWords.push(word);
 		console.log(word);
 		// language logic
 		if (userLang == "fr") {
@@ -240,5 +265,9 @@ var getAcronym = function(text){
 			result.push(word.value);
 		}
 	};
+	var i = removedWords.length;
+	while (i--) {
+		dict.insert(removedWords[i]);
+	}
 	return result.join(" ");
 }
