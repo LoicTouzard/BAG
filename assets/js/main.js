@@ -1,11 +1,14 @@
 /**
  * Object Word
  * @param {String} value       The word as String
- * @param {String} lang        The Word's lang
- * @param {String} type        The Word's type : "noun", "adjective", ...
- * @param {String} preposition The preposition wich fit the word if necessary : "de", "d'", ...
+ * @param {String} lang        The Word's lang -- default is "en"
+ * @param {String} type        The Word's type : "noun", "adjective", ... -- default is "noun"
+ * @param {String} preposition The preposition wich fit the word if necessary : "de", "d'", ... -- default is ""
  */
-function Word(value,lang = "en", type="noun", preposition=""){
+function Word(value, lang, type, preposition){
+	lang = typeof lang !== 'undefined' ?  lang : "en";
+	type = typeof type !== 'undefined' ?  type : "noun";
+	preposition = typeof preposition !== 'undefined' ?  preposition : "";
 	this.value = value;
 	this.lang = lang;
 	this.type = type;
@@ -14,7 +17,14 @@ function Word(value,lang = "en", type="noun", preposition=""){
 		return value[0].toUpperCase();
 	};
 	this.startWithVowel = function(){
-		return contains(["A","E","I","O","U","Y"],this.first())
+		var vowels = ["A","E","I","O","U","Y"];
+		var i = vowels.length;
+		while (i--) {
+			if (vowels[i] === this.first()) {
+				return true;
+			}
+		}
+		return false;
 	};
 	this.equals = function(word){
 		if(word instanceof Word){
@@ -76,33 +86,42 @@ var removeWord = function(array, word) {
 }
 
 /**
- * Dictionnary, that contains the indexed words
+ * Dictionary, that contains the indexed words
  * @type {Object}
  */
 var dict = {
+	words:{},
 	/**
-	 * Insert a Word Object in the dictionnary, the Word will be indexed
-	 * @param  {Word} word 	The word to insert into the dictionnary
+	 * Insert a Word Object in the dictionary, the Word will be indexed
+	 * @param  {Word} word 	The word to insert into the dictionary
 	 */
 	insert: function(word){
 		if(word instanceof Word){
-			if(!dict[word.lang])
-				dict[word.lang] = [];
-			if(!dict[word.lang][word.first()])
-				dict[word.lang][word.first()] = [];
-			if(!containsWord(dict[word.lang][word.first()], word))
-				dict[word.lang][word.first()].push(word);
+			if(!words[word.lang])
+				words[word.lang] = [];
+			if(!words[word.lang][word.first()])
+				words[word.lang][word.first()] = [];
+			if(!containsWord(words[word.lang][word.first()], word))
+				words[word.lang][word.first()].push(word);
 		}
 	},
 	/**
-	 * Remove a Word Object from the dictionnary
+	 * Remove a Word Object from the dictionary
 	 * @param  {Word} word The Word to remove
 	 */
 	remove: function(word){
 		if(word instanceof Word){
-			if(dict[word.lang] && dict[word.lang][word.first()] && containsWord(dict[word.lang][word.first()], word))
-				dict[word.lang][word.first()].pop(word);
+			if(words[word.lang] && words[word.lang][word.first()] && containsWord(words[word.lang][word.first()], word))
+				words[word.lang][word.first()].pop(word);
 		}
+	},
+	/**
+	 * Give a random Word from the dictionary beginning with the given letter
+	 * @param  {String} letter 	The letter that must start the returned Word
+	 * @return {Word}        	A Word beginning with the letter
+	 */
+	getRandomWord: function(letter){
+		return words[userLang][letter][getRandomIndex(words[userLang][letter].length)];
 	}
 };
 
@@ -195,19 +214,8 @@ var getRandomElement = function(array){
 	return array[getRandomIndex(array.length)];
 };
 
-// TODO to put as method in the dict ?
 /**
- * Give a random Word from the dictionnary dict beginning with the given letter
- * @param  {String} letter 	The letter that must start the returned Word
- * @return {Word}        	A Word beginning with the letter
- */
-var getRandomWord = function(letter){
-	return dict[userLang][letter][getRandomIndex(dict[userLang][letter].length)];
-};
-
-// TODO to put as method in the dict ?
-/**
- * Calculate and find an acronym from the dictionnay dict
+ * Calculate and find an acronym from the dictionary dict
  * @param  {String} text The word to "Acronymyze"
  * @return {String}      The word text meaning, letter by letter.
  */
@@ -216,12 +224,13 @@ var getAcronym = function(text){
 	for (var i = 0; i < text.length; i++) {
 		console.log("\nWord for "+text[i].toUpperCase()+", position : "+i);
 		// find new word
-		var word = getRandomWord(text[i].toUpperCase());
+		var word = dict.getRandomWord(text[i].toUpperCase());
 		console.log(word);
-		//language logic
+		// language logic
 		if (userLang == "fr") {
 			if(i > 0){
-				result.push(word.preposition+word.value);
+				// add preposition for 2+ word
+				result.push(word.preposition + word.value);
 			}
 			else{
 				result.push(word.value);
