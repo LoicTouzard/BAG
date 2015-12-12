@@ -2,17 +2,24 @@
  * Object Word
  * @param {String} value       The word as String
  * @param {String} lang        The Word's lang -- default is "en"
+ * @param {Array} subjects 	   The subjects where the Word belong. -- default is []
+ * @param {String} preposition The preposition which fit the word if necessary : "de", "d'", ... -- default is ""
  * @param {String} type        The Word's type : "noun", "adjective", ... -- default is "noun"
- * @param {String} preposition The preposition wich fit the word if necessary : "de", "d'", ... -- default is ""
+ * @param {Integer} position   The prefered position of the word in acronyms : Word.POSITION.ANYWHERE is anywhere, Word.POSITION.START is start, Word.POSITION.MIDDLE is middle, Word.POSITION is end. -- default is Word.POSITION.ANYWHERE
  */
-function Word(value, lang, type, preposition){
+function Word(value, lang, subjects, preposition, type, position){
 	lang = typeof lang !== 'undefined' ?  lang : "en";
 	type = typeof type !== 'undefined' ?  type : "noun";
 	preposition = typeof preposition !== 'undefined' ?  preposition : "";
+	position = typeof position !== 'undefined' ?  position : Word.POSITION.ANYWHERE;
+	subjects = typeof subjects !== 'undefined' ?  subjects : [];
 	this.value = value;
 	this.lang = lang;
 	this.type = type;
 	this.preposition = preposition;
+	this.position = position-1; // -1 for array index
+	this.subjects = subjects;
+	this.subjects.push(Word.SUBJECT.ALL);
 	this.first = function(){
 		return value[0].toUpperCase();
 	};
@@ -35,6 +42,8 @@ function Word(value, lang, type, preposition){
 		return false;
 	};
 }
+Word.POSITION = {ANYWHERE:0, START:1, MIDDLE:2, END:3}; 
+Word.SUBJECT = {ALL:0, ASI:1, PLD:2}; 
 
 /**
  * Determine if an object is contained in an array (by reference)
@@ -150,56 +159,67 @@ var dict = {
  * @type {Array}
  */
 var words = [
-	new Word("Architecture", "fr", "noun", "d'"),
-	new Word("Architecture", "en", "noun"),
-	new Word("Assurance", "fr", "noun", "d'"),
-	new Word("Activité", "fr", "noun", "d'"),
-	new Word("Activity", "en", "noun"),
+	new Word("Architecture", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
+	new Word("Architecture", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
+	new Word("Assurance", "fr", [Word.SUBJECT.PLD], "d'", "noun", Word.POSITION.ANYWHERE),
+	new Word("Activité", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
+	new Word("Activity", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 
-	new Word("Business", "en", "noun"),
+	new Word("Business", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 
-	new Word("Conception", "fr", "noun", "de"),
-	new Word("Conception", "en", "noun"),
+	new Word("Conception", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de"),
+	new Word("Conception", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Client", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Customer", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 
-	new Word("Données", "fr", "noun", "des"),
-	new Word("Donnée", "fr", "noun", "de"),
-	new Word("Data", "en", "noun"),
-	new Word("Diagramme", "fr", "noun", "de"),
-	new Word("Diagram", "en", "noun"),
-	new Word("Design", "en", "noun"),
+	new Word("Données", "fr", [Word.SUBJECT.ASI], "des"),
+	new Word("Donnée", "fr", [Word.SUBJECT.ASI], "de"),
+	new Word("Data", "en", [Word.SUBJECT.ASI]),
+	new Word("Diagramme", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de"),
+	new Word("Diagram", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], ""),
+	// new Word("Design", "en", "noun"),
 
-	new Word("Entreprise", "fr", "noun", "d'"),
-	new Word("Enterprise", "en", "noun"),
-	new Word("Environment", "en", "noun"),
-	new Word("Environnement", "fr", "noun", "d'"),
-	new Word("Entity", "en", "noun"),
-	new Word("Entité", "fr", "noun", "d'"),
-	new Word("Economy", "en", "noun"),
-	new Word("Economie", "fr", "noun", "d'"),
+	new Word("Economy", "en", [Word.SUBJECT.PLD]),
+	new Word("Economie", "fr", [Word.SUBJECT.PLD], "d'"),
+	new Word("Entreprise", "fr", [Word.SUBJECT.PLD,  Word.SUBJECT.ASI], "d'"),
+	new Word("Enterprise", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
+	new Word("Environment", "en", [Word.SUBJECT.PLD]),
+	new Word("Environnement", "fr", [Word.SUBJECT.PLD], "d'"),
+	new Word("Entity", "en", [Word.SUBJECT.ASI]),
+	new Word("Entité", "fr", [Word.SUBJECT.ASI], "d'"),
 
-	new Word("Fonctionnel", "fr", "adjective"),
-	new Word("Fonctional", "en", "adjective"),
+	new Word("Fonctionnel", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
+	new Word("Fonctional", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
 
-	new Word("Objet", "fr", "noun", "d'"),
-	new Word("Object", "en", "noun"),
+	new Word("Objet", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
+	new Word("Object", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Oriented", "en", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Orienté", "fr", [Word.SUBJECT.ASI], "", "adjective"),
 
-	new Word("Métier", "fr", "noun"),
-	new Word("Modèle", "fr", "noun", "du"),
-	new Word("Model", "en", "noun"),
+	new Word("Métier", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Modèle", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "du"),
+	new Word("Model", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	
-	new Word("Plan", "en", "noun"),
-	new Word("Plan", "fr", "noun"),
-	new Word("Planning", "en", "noun"),
-	new Word("Planification", "fr", "noun"),
+	new Word("Plan", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Plan", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Planning", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
+	new Word("Planification", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
 
-	new Word("Quality", "en", "noun"),
-	new Word("Qualité", "fr", "noun"),
+	new Word("Quality", "en", [Word.SUBJECT.PLD]),
+	new Word("Qualité", "fr", [Word.SUBJECT.PLD]),
 
-	new Word("Ressource", "en", "noun"),
-	new Word("Ressource", "fr", "noun", "d'"),
-	new Word("Ressources", "fr", "noun", "des"),
-	new Word("Responsable", "en", "noun"),
-	new Word("Responsable", "fr", "noun"),
+	new Word("Relationship", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Relation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de la"),
+	new Word("Resource", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Ressource", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
+	new Word("Ressources", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "des"),
+	new Word("Ressources", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Responsable", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
+
+
+	new Word("Service", "en", [Word.SUBJECT.ASI]),
+	new Word("Service", "fr", [Word.SUBJECT.ASI]),
+
 ];
  
 
@@ -255,7 +275,7 @@ var getAcronym = function(text){
 		if (userLang == "fr") {
 			if(i > 0){
 				// add preposition for 2+ word
-				result.push(word.preposition + word.value);
+				result.push(word.preposition + " " + word.value);
 			}
 			else{
 				result.push(word.value);
