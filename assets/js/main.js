@@ -159,67 +159,122 @@ var dict = {
  * @type {Array}
  */
 var words = [
+// A
 	new Word("Architecture", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
 	new Word("Architecture", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
 	new Word("Assurance", "fr", [Word.SUBJECT.PLD], "d'", "noun", Word.POSITION.ANYWHERE),
 	new Word("Activité", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
 	new Word("Activity", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-
+	new Word("Application", "fr", [Word.SUBJECT.ASI], "d'"),
+	new Word("Application", "en", [Word.SUBJECT.ASI]),
+	new Word("Applicatif(ve)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Applicative", "en", [Word.SUBJECT.ASI], "", "adjective"),
+// B
 	new Word("Business", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-
-	new Word("Conception", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de"),
+	new Word("Bloc", "fr", [Word.SUBJECT.ASI], "en "),
+	new Word("Brut(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
+// C
+	new Word("Cas", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
+	new Word("Case", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Conception", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
 	new Word("Conception", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Client", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Customer", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-
-	new Word("Données", "fr", [Word.SUBJECT.ASI], "des"),
-	new Word("Donnée", "fr", [Word.SUBJECT.ASI], "de"),
+	new Word("Chain", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Chaine", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
+// D
+	new Word("Détaillé(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Development", "en", [Word.SUBJECT.ASI]),
+	new Word("Développement", "fr", [Word.SUBJECT.ASI], "de "),
+//	new Word("Données", "fr", [Word.SUBJECT.ASI], "des "),
+	new Word("Donnée", "fr", [Word.SUBJECT.ASI], "de "),
 	new Word("Data", "en", [Word.SUBJECT.ASI]),
-	new Word("Diagramme", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de"),
-	new Word("Diagram", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], ""),
+	new Word("Diagramme", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de ", Word.POSITION.START),
+	new Word("Diagram", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", Word.POSITION.END),
 	// new Word("Design", "en", "noun"),
-
+// E
 	new Word("Economy", "en", [Word.SUBJECT.PLD]),
 	new Word("Economie", "fr", [Word.SUBJECT.PLD], "d'"),
-	new Word("Entreprise", "fr", [Word.SUBJECT.PLD,  Word.SUBJECT.ASI], "d'"),
+	new Word("Employee", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
+	new Word("Employé", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI], "d'"),
+	new Word("Entreprise", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI], "d'"),
 	new Word("Enterprise", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
 	new Word("Environment", "en", [Word.SUBJECT.PLD]),
 	new Word("Environnement", "fr", [Word.SUBJECT.PLD], "d'"),
 	new Word("Entity", "en", [Word.SUBJECT.ASI]),
 	new Word("Entité", "fr", [Word.SUBJECT.ASI], "d'"),
-
-	new Word("Fonctionnel", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
+	new Word("Etat", "fr", [Word.SUBJECT.ASI], "d'"),
+// F
+	new Word("Fonctionnel(le)", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
 	new Word("Fonctional", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
-
+// G
+	new Word("Gestion", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
+// H
+// I
+	new Word("Interface", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
+	new Word("Interface", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
+	new Word("Infrastructure", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'", "noun"),
+	new Word("Infrastructure", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun"),
+// J
+// K
+// L
+	new Word("Local(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Local", "en", [Word.SUBJECT.ASI], "", "adjective"),
+// M
+	new Word("Management", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.END),
+	new Word("Maîtrise", "fr", [Word.SUBJECT.PLD], "de ", "noun", Word.POSITION.START),
+	new Word("Métier", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Method", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.END),
+	new Word("Méthode", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
+	new Word("Modèle", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "du "),
+	new Word("Model", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+// N
+// O
 	new Word("Objet", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
 	new Word("Object", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Oriented", "en", [Word.SUBJECT.ASI], "", "adjective"),
 	new Word("Orienté", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-
-	new Word("Métier", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Modèle", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "du"),
-	new Word("Model", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	
+	new Word("Oriented", "en", [Word.SUBJECT.ASI], "", "adjective"),
+// P	
 	new Word("Plan", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Plan", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Planning", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
 	new Word("Planification", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
-
+	new Word("Process", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
+// Q
 	new Word("Quality", "en", [Word.SUBJECT.PLD]),
 	new Word("Qualité", "fr", [Word.SUBJECT.PLD]),
-
+// R
 	new Word("Relationship", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Relation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de la"),
+	new Word("Relation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de la "),
 	new Word("Resource", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Ressource", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
-	new Word("Ressources", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "des"),
-	new Word("Ressources", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Ressource", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
+	new Word("Ressources", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "des "),
+//	new Word("Ressources", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Responsable", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
-
-
+// S
 	new Word("Service", "en", [Word.SUBJECT.ASI]),
 	new Word("Service", "fr", [Word.SUBJECT.ASI]),
-
+	new Word("Séquence", "fr", [Word.SUBJECT.ASI], "de "),
+	new Word("Sequence", "en", [Word.SUBJECT.ASI]),
+	new Word("Système", "fr", [Word.SUBJECT.ASI]),
+	new Word("System", "en", [Word.SUBJECT.ASI]),
+	new Word("State", "en", [Word.SUBJECT.ASI]),
+	new Word("Supply", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+// T
+// U
+	new Word("Utilisation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
+	new Word("Use", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
+	new Word("Urbanisme", "fr", [Word.SUBJECT.ASI], "d'"),
+	new Word("Urbanism", "en", [Word.SUBJECT.ASI]),
+	new Word("Urbanisation", "fr", [Word.SUBJECT.ASI], "d'", "adjective"),
+	new Word("Urbanisation", "en", [Word.SUBJECT.ASI], "adjective"),
+// V
+// W
+	new Word("Web", "fr", [Word.SUBJECT.ASI], "du "),
+	new Word("Web", "en", [Word.SUBJECT.ASI]),
+// X
+// Y
+// Z
 ];
  
 
@@ -275,7 +330,7 @@ var getAcronym = function(text){
 		if (userLang == "fr") {
 			if(i > 0){
 				// add preposition for 2+ word
-				result.push(word.preposition + " " + word.value);
+				result.push(word.preposition + word.value);
 			}
 			else{
 				result.push(word.value);
