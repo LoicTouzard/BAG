@@ -43,7 +43,7 @@ function Word(value, lang, subjects, preposition, type, position){
 	};
 }
 Word.POSITION = {ANYWHERE:0, START:1, MIDDLE:2, END:3}; 
-Word.SUBJECT = {ALL:0, ASI:1, PLD:2}; 
+Word.SUBJECT = {ALL:0, BULLSHIT:1, ASI:2, PLD:3}; 
 
 /**
  * Determine if an object is contained in an array (by reference)
@@ -177,15 +177,17 @@ var words = [
 	new Word("Cas", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
 	new Word("Case", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Conception", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
+	new Word("Comité", "fr", [Word.SUBJECT.PLD], "de "),
 	new Word("Conception", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Client", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Customer", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Chain", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Chaine", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
+	new Word("Chaîne", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
 // D
 	new Word("Détaillé(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
 	new Word("Development", "en", [Word.SUBJECT.ASI]),
 	new Word("Développement", "fr", [Word.SUBJECT.ASI], "de "),
+	new Word("Direction", "fr", [Word.SUBJECT.PLD], "de "),
 //	new Word("Données", "fr", [Word.SUBJECT.ASI], "des "),
 	new Word("Donnée", "fr", [Word.SUBJECT.ASI], "de "),
 	new Word("Data", "en", [Word.SUBJECT.ASI]),
@@ -207,9 +209,12 @@ var words = [
 // F
 	new Word("Fonctionnel(le)", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
 	new Word("Fonctional", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
+	new Word("Filiale", "fr", [Word.SUBJECT.PLD]),
 // G
 	new Word("Gestion", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
 // H
+	new Word("Hiérarchie", "fr", [Word.SUBJECT.PLD], "de "),
+	new Word("Hierarchy", "en", [Word.SUBJECT.PLD]),
 // I
 	new Word("Interface", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
 	new Word("Interface", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
@@ -220,9 +225,13 @@ var words = [
 // L
 	new Word("Local(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
 	new Word("Local", "en", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Logique", "fr", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Logic", "en", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Leadership", "en", [Word.SUBJECT.PLD]),
 // M
 	new Word("Management", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.END),
 	new Word("Maîtrise", "fr", [Word.SUBJECT.PLD], "de ", "noun", Word.POSITION.START),
+	new Word("Marge", "fr", [Word.SUBJECT.PLD], "de ", "noun", Word.POSITION.START),
 	new Word("Métier", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Method", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.END),
 	new Word("Méthode", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
@@ -232,7 +241,7 @@ var words = [
 // O
 	new Word("Objet", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
 	new Word("Object", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Orienté", "fr", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Orienté(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
 	new Word("Oriented", "en", [Word.SUBJECT.ASI], "", "adjective"),
 // P	
 	new Word("Plan", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
@@ -240,6 +249,7 @@ var words = [
 	new Word("Planning", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
 	new Word("Planification", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
 	new Word("Process", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
+	new Word("Processus", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI], "de "),
 // Q
 	new Word("Quality", "en", [Word.SUBJECT.PLD]),
 	new Word("Qualité", "fr", [Word.SUBJECT.PLD]),
@@ -261,6 +271,7 @@ var words = [
 	new Word("State", "en", [Word.SUBJECT.ASI]),
 	new Word("Supply", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 // T
+	new Word("Transaction", "fr", [Word.SUBJECT.PLD], "de "),
 // U
 	new Word("Utilisation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
 	new Word("Use", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
@@ -269,6 +280,7 @@ var words = [
 	new Word("Urbanisation", "fr", [Word.SUBJECT.ASI], "d'", "adjective"),
 	new Word("Urbanisation", "en", [Word.SUBJECT.ASI], "adjective"),
 // V
+
 // W
 	new Word("Web", "fr", [Word.SUBJECT.ASI], "du "),
 	new Word("Web", "en", [Word.SUBJECT.ASI]),
