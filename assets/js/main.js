@@ -33,6 +33,11 @@ function Word(value, lang, subjects, preposition, type, position){
 		}
 		return false;
 	};
+	/**
+	 * Determine if the current is equal to another
+	 * @param  {Word} word 	  The Word to wompare with.
+	 * @return {boolean}      True if the Word is equal to the current Word, else false.
+	 */
 	this.equals = function(word){
 		if(word instanceof Word){
 			return word.value == this.value &&
@@ -42,7 +47,18 @@ function Word(value, lang, subjects, preposition, type, position){
 		return false;
 	};
 }
-Word.POSITION = {ANYWHERE:0, START:1, MIDDLE:2, END:3}; 
+/**
+ * Define the preferred position for a word
+ * @type {Object}
+ */
+Word.POSITION = {ANYWHERE:0, START:1, MIDDLE:2, END:3};
+/**
+ * The available subjects for Words.
+ * Don't use Word.SUBJECT.ALL, it is automatically added to every created Word.
+ * Word.SUBJECT.BULLSHIT isn't a subject but it represents a pool of bullshit words.
+ * If no word are found for a given subject, we can search in bullshit to find one.
+ * @type {Object}
+ */
 Word.SUBJECT = {ALL:0, BULLSHIT:1, ASI:2, PLD:3}; 
 
 /**
@@ -99,6 +115,13 @@ var removeWord = function(array, word) {
  * @type {Object}
  */
 var dict = {
+	/**
+	 * Contains the words of the dictionnary
+	 * It is composed of an arrays and sub-arrays structure.
+	 * Structure :
+	 * 	word[lang][subject][letter] = [Word, Word, Word, ...]
+	 * @type {Object}
+	 */
 	words:{},
 	/**
 	 * Insert a Word Object in the dictionary, the Word will be indexed
@@ -106,12 +129,20 @@ var dict = {
 	 */
 	insert: function(wordToInsert){
 		if(wordToInsert instanceof Word){
+			// if the lang doesn't exists, create the array
 			if(!words[wordToInsert.lang])
 				words[wordToInsert.lang] = [];
-			if(!words[wordToInsert.lang][wordToInsert.first()])
-				words[wordToInsert.lang][wordToInsert.first()] = [];
-			if(!containsWord(words[wordToInsert.lang][wordToInsert.first()], wordToInsert))
-				words[wordToInsert.lang][wordToInsert.first()].push(wordToInsert);
+			for (var i = wordToInsert.subjects.length - 1; i >= 0; i--) {
+				// if the subject doesn't exists, create the array
+				if(!words[wordToInsert.lang][wordToInsert.subjects[i]])
+					words[wordToInsert.lang][wordToInsert.subjects[i]] = [];
+				// if the letter doesn't exists, create the array
+				if(!words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()])
+					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()] = [];
+				// if the Word isn't already inserted, insert it
+				if(!containsWord(words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()], wordToInsert))
+					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()].push(wordToInsert);
+			};
 		}
 	},
 	/**
@@ -121,15 +152,20 @@ var dict = {
 	 */
 	remove: function(wordToRemove){
 		if(wordToRemove instanceof Word){
-			if(words[wordToRemove.lang] && words[wordToRemove.lang][wordToRemove.first()] && containsWord(words[wordToRemove.lang][wordToRemove.first()], wordToRemove)){
-				var wordArray = words[wordToRemove.lang][wordToRemove.first()];
-				var i = wordArray.length
-				while(i--){
-					if (wordArray[i].equals(wordToRemove)) {
-						wordArray.splice(i,1);
-					};
+			if(	words[wordToRemove.lang]){
+				for (var i = wordToRemove.subjects.length - 1; i >= 0; i--) {
+					if (words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()]
+						&& containsWord(words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()], wordToRemove)) {
+						var wordArray = words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()];
+						var i = wordArray.length
+						while(i--){
+							if (wordArray[i].equals(wordToRemove)) {
+								wordArray.splice(i,1);
+							}
+						}
+						return true;
+					}
 				}
-				return true;
 			}
 		}
 		return false;
@@ -137,18 +173,24 @@ var dict = {
 	/**
 	 * Give a random Word from the dictionary beginning with the given letter
 	 * @param  {String} letter 	The letter that must start the returned Word
-	 * @return {Word}        	A Word beginning with the letter
+	 * @return {Object}         Response Object with 2 attributes:
+	 *                                   (boolean)'found', if true, the attribute (Word)'word' exists with the picked Word
+	 *                                   				 , if false, the attribute (String)'msg' exists and contains the error message
 	 */
-	getRandomWord: function(letter){
-		if (!words[userLang][letter]) {
-			alert("There is no word starting with '"+letter+"' available.");
-			return null;
+	getRandomWord: function(letter, lang, subject){
+		if(!words[lang]){
+			return {found: false, msg: "There is no word for the language '"+lang+"' available."};
 		}
-		else if(words[userLang][letter].length == 0){
-			alert("There is not enough words starting with '"+letter+"' available.");
-			return null;
+		if (!words[lang][subject]) {
+			return {found: false, msg: "There is no word for the subject '"+subject+"' available."};
 		}
-		return words[userLang][letter][getRandomIndex(words[userLang][letter].length)];
+		if (!words[lang][subject][letter]) {
+			return {found: false, msg: "There is no word starting with '"+letter+"' available."};
+		}
+		else if(words[lang][subject][letter].length == 0){
+			return {found: false, msg: "There is not enough words starting with '"+letter+"' available."};
+		}
+		return {found: true, word: words[lang][subject][letter][getRandomIndex(words[lang][subject][letter].length)]};
 	}
 };
 
@@ -238,6 +280,8 @@ var words = [
 	new Word("Modèle", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "du "),
 	new Word("Model", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 // N
+	new Word("Natif(ve)", "fr", [Word.SUBJECT.BULLSHIT], "", "adjective"),
+	new Word("Native", "en", [Word.SUBJECT.BULLSHIT], "", "adjective"),
 // O
 	new Word("Objet", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
 	new Word("Object", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
@@ -298,8 +342,6 @@ for (var i = words.length - 1; i >= 0; i--) {
 	dict.insert(words[i]);
 };
 
-// TODO organize parameters as userLang (settings object ?)
-var userLang = "fr";
 
 /**
  * Return random number between 0 and size-1
@@ -324,22 +366,39 @@ var getRandomElement = function(array){
  * @param  {String} text The word to "Acronymyze"
  * @return {String}      The word text meaning, letter by letter.
  */
-var getAcronym = function(text){
+var getAcronym = function(text, lang, subject){
 	var result = [];
 	var removedWords = [];
 	for (var i = 0; i < text.length; i++) {
-		console.log("\nWord for "+text[i].toUpperCase()+", position : "+i);
+		console.log("\nWord for "+text[i].toUpperCase()+", position : "+i+', lang : '+lang+', subject : '+subject);
+
 		// find new word
-		var word = dict.getRandomWord(text[i].toUpperCase());
-		if(word == null){
-			result = [];
-			break;
+		var response = dict.getRandomWord(text[i].toUpperCase(), lang, subject);
+		if(response.found == false){
+			console.log("Word not found ...");
+			if(subject == Word.SUBJECT.ALL){
+				alert(response.msg);
+				result = [];
+				break;	
+			}
+			// if we can't find the word, search it in bullshit
+			console.log("\nWord for "+text[i].toUpperCase()+", position : "+i+', lang : '+lang+', subject : '+Word.SUBJECT.BULLSHIT);
+			response = dict.getRandomWord(text[i].toUpperCase(), lang, Word.SUBJECT.BULLSHIT);
+			if(response.found == false){
+			console.log("Word not found ...");
+				alert(response.msg);
+				result = [];
+				break;	
+			}
 		}
+		var word = response.word;
 		dict.remove(word);
 		removedWords.push(word);
 		console.log(word);
+
+
 		// language logic
-		if (userLang == "fr") {
+		if (lang == "fr") {
 			if(i > 0){
 				// add preposition for 2+ word
 				result.push(word.preposition + word.value);
@@ -348,7 +407,7 @@ var getAcronym = function(text){
 				result.push(word.value);
 			}
 		}
-		else if (userLang == "en") {
+		else if (lang == "en") {
 			result.push(word.value);
 		}
 	};

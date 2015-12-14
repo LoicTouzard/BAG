@@ -9,16 +9,35 @@
 <!-- TODO enhance user experience x), make the acronym query customizable (lang for example, subject maybe too ? (later))-->
 	<form id="form" action="" autocomplete="off">
 		<input id="input" type="text">
-		<input type="submit" value="Acronymyze !">		
+		<input type="submit" value="Acronymyze !">	
+		<p>Lang</p>
+		<div id="langs">
+			<label><input type="radio" name="lang" value="fr" checked="checked"> fr</label>
+			<label><input type="radio" name="lang" value="en"> en</label>
+		</div>
+		<p>Subject</p>
+		<div id="subjects">
+			<label><input type="radio" name="subject" value="0" checked="checked"> ALL</label>
+			<label><input type="radio" name="subject" value="2"> ASI</label>
+			<label><input type="radio" name="subject" value="3"> PLD</label>
+		</div>
 	</form>
-	<p id="result"></p>
+	<h2 id="result"></h2>
 	<script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="assets/js/main.js"></script>
 	<script>
 		$(function(){
+
+			// submit handler
 			$("#form").submit(
 				function(){
-					$("#result").text(getAcronym($("#input").val()));
+					$("#result").text(
+						getAcronym(
+							$("#input").val(),
+							$('input[name="lang"]:checked').val(),
+							$('input[name="subject"]:checked').val()
+						)
+					);
 					return false;
 				}
 			);
