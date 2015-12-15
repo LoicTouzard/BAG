@@ -6,18 +6,37 @@
  * @param {String} preposition The preposition which fit the word if necessary : "de", "d'", ... -- default is ""
  * @param {String} type        The Word's type : "noun", "adjective", ... -- default is "noun"
  * @param {Integer} position   The prefered position of the word in acronyms : Word.POSITION.ANYWHERE is anywhere, Word.POSITION.START is start, Word.POSITION.MIDDLE is middle, Word.POSITION is end. -- default is Word.POSITION.ANYWHERE
+ *                             If The type is "adjective" the default position depends of the lang.
  */
 function Word(value, lang, subjects, preposition, type, position){
 	lang = typeof lang !== 'undefined' ?  lang : "en";
 	type = typeof type !== 'undefined' ?  type : "noun";
 	preposition = typeof preposition !== 'undefined' ?  preposition : "";
 	position = typeof position !== 'undefined' ?  position : Word.POSITION.ANYWHERE;
+	if(typeof position !== 'undefined'){
+		if(type == 'adjective'){
+			// if the position of an adjective isn't defined
+			switch(lang){
+				case 'fr':
+					position = Word.POSITION.END;
+					break;
+				case 'en':
+					position = Word.POSITION.START;
+					break;
+				default :
+					position = Word.POSITION.ANYWHERE;
+			}
+		}
+		else{
+			position = Word.POSITION.ANYWHERE;
+		}
+	}
 	subjects = typeof subjects !== 'undefined' ?  subjects : [];
 	this.value = value;
 	this.lang = lang;
 	this.type = type;
 	this.preposition = preposition;
-	this.position = position-1; // -1 for array index
+	this.position = position;
 	this.subjects = subjects;
 	this.subjects.push(Word.SUBJECT.ALL);
 	this.first = function(){
@@ -49,9 +68,13 @@ function Word(value, lang, subjects, preposition, type, position){
 }
 /**
  * Define the preferred position for a word
+ * Use Word.POSITION.ANYWHERE when the word can fit anywhere in an Acronym (default constructor value)
+ * Use Word.POSITION.START when the word can only be placed at the beginning of the word
+ * Use Word.POSITION.MIDDLE when the word can't be placed at the beginning, nor the end of the word
+ * Use Word.POSITION.END when the word can only be placed at the end of the word
  * @type {Object}
  */
-Word.POSITION = {ANYWHERE:0, START:1, MIDDLE:2, END:3};
+Word.POSITION = {ANYWHERE:1, START:2, MIDDLE:3, END:4};
 /**
  * The available subjects for Words.
  * Don't use Word.SUBJECT.ALL, it is automatically added to every created Word.
@@ -119,7 +142,7 @@ var dict = {
 	 * Contains the words of the dictionnary
 	 * It is composed of an arrays and sub-arrays structure.
 	 * Structure :
-	 * 	word[lang][subject][letter] = [Word, Word, Word, ...]
+	 * 	word[lang][subject][letter][position] = [Word, Word, Word, ...]
 	 * @type {Object}
 	 */
 	words:{},
@@ -139,9 +162,12 @@ var dict = {
 				// if the letter doesn't exists, create the array
 				if(!words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()])
 					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()] = [];
+				// if the position doesn't exists, create the array
+				if(!words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position])
+					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position] = [];
 				// if the Word isn't already inserted, insert it
-				if(!containsWord(words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()], wordToInsert))
-					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()].push(wordToInsert);
+				if(!containsWord(words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position], wordToInsert))
+					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position].push(wordToInsert);
 			};
 		}
 	},
@@ -155,8 +181,9 @@ var dict = {
 			if(	words[wordToRemove.lang]){
 				for (var i = wordToRemove.subjects.length - 1; i >= 0; i--) {
 					if (words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()]
-						&& containsWord(words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()], wordToRemove)) {
-						var wordArray = words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()];
+						&& words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position]
+						&& containsWord(words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position], wordToRemove)) {
+						var wordArray = words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position];
 						var i = wordArray.length
 						while(i--){
 							if (wordArray[i].equals(wordToRemove)) {
@@ -172,12 +199,15 @@ var dict = {
 	},
 	/**
 	 * Give a random Word from the dictionary beginning with the given letter
-	 * @param  {String} letter 	The letter that must start the returned Word
-	 * @return {Object}         Response Object with 2 attributes:
+	 * @param  {String} letter 	 The letter that must start the returned Word
+	 * @param  {String} lang 	 The lang of the Word
+	 * @param  {String} subject  The subject from Word.SUBJECT of the Word
+	 * @param  {String} position The position from Word.POSITION of the Word
+	 * @return {Object}          Response Object with 2 attributes:
 	 *                                   (boolean)'found', if true, the attribute (Word)'word' exists with the picked Word
 	 *                                   				 , if false, the attribute (String)'msg' exists and contains the error message
 	 */
-	getRandomWord: function(letter, lang, subject){
+	getRandomWord: function(letter, lang, subject, position){
 		if(!words[lang]){
 			return {found: false, msg: "There is no word for the language '"+lang+"' available."};
 		}
@@ -187,23 +217,33 @@ var dict = {
 		if (!words[lang][subject][letter]) {
 			return {found: false, msg: "There is no word starting with '"+letter+"' available."};
 		}
-		else if(words[lang][subject][letter].length == 0){
+		if (!words[lang][subject][letter][position]) {
+			// change this error msg ?
+			return {found: false, msg: "There is no word starting with '"+letter+"' available."};
+		}
+		else if(words[lang][subject][letter][position].length == 0){
 			return {found: false, msg: "There is not enough words starting with '"+letter+"' available."};
 		}
-		return {found: true, word: words[lang][subject][letter][getRandomIndex(words[lang][subject][letter].length)]};
+		return {found: true, word: words[lang][subject][letter][position][getRandomIndex(words[lang][subject][letter][position].length)]};
 	}
 };
 
 // TODO : Structure the words data somewhere else ?
 /**
  * Contains aaaaaaaall the words, as a list. The words aren't indexed here.
+ * NB IMPORTANT : If  you want to add some words, please follow these rules : 
+ * 		- check how the Word() constructor works. It is documented. Default values may save you some time.
+ * 		- Add singular words, the number gestion will be added later.
+ * 		- Write them in the right place. In the letter they belong.
+ * 		- Add only Words that can fit easily in almost ANY acronym, not only the one you have in mind.
+ * 
  * @type {Array}
  */
 var words = [
 // A
 	new Word("Architecture", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
 	new Word("Architecture", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
-	new Word("Assurance", "fr", [Word.SUBJECT.PLD], "d'", "noun", Word.POSITION.ANYWHERE),
+	new Word("Assurance", "fr", [Word.SUBJECT.PLD], "d'"),
 	new Word("Activité", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
 	new Word("Activity", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Application", "fr", [Word.SUBJECT.ASI], "d'"),
@@ -301,12 +341,12 @@ var words = [
 	new Word("Relation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de la "),
 	new Word("Resource", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Ressource", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
-	new Word("Ressources", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "des "),
+//	new Word("Ressources", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "des "),
 //	new Word("Ressources", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Responsable", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
 // S
 	new Word("Service", "en", [Word.SUBJECT.ASI]),
-	new Word("Service", "fr", [Word.SUBJECT.ASI]),
+	new Word("Service", "fr", [Word.SUBJECT.ASI], "de "),
 	new Word("Séquence", "fr", [Word.SUBJECT.ASI], "de "),
 	new Word("Sequence", "en", [Word.SUBJECT.ASI]),
 	new Word("Système", "fr", [Word.SUBJECT.ASI]),
@@ -321,7 +361,7 @@ var words = [
 	new Word("Urbanisme", "fr", [Word.SUBJECT.ASI], "d'"),
 	new Word("Urbanism", "en", [Word.SUBJECT.ASI]),
 	new Word("Urbanisation", "fr", [Word.SUBJECT.ASI], "d'", "adjective"),
-	new Word("Urbanisation", "en", [Word.SUBJECT.ASI], "adjective"),
+	new Word("Urbanisation", "en", [Word.SUBJECT.ASI], "", "adjective"),
 // V
 
 // W
@@ -369,35 +409,67 @@ var getAcronym = function(text, lang, subject){
 	if(text.toUpperCase()=="BAG") return "Bullshit Acronym Generator";
 	var result = [];
 	var removedWords = [];
+	// if we can't find a word at a specific position we can search to the next position
+	var positionsStartOrder = [Word.POSITION.START, Word.POSITION.ANYWHERE, Word.POSITION.MIDDLE, Word.POSITION.END];
+	var positionsEndOrder = [Word.POSITION.END, Word.POSITION.ANYWHERE, Word.POSITION.MIDDLE, Word.POSITION.START];
+	var positionsMiddleOrder = [Word.POSITION.MIDDLE, Word.POSITION.ANYWHERE, Word.POSITION.START, Word.POSITION.END];
 	for (var i = 0; i < text.length; i++) {
-		console.log("\nWord for "+text[i].toUpperCase()+", position : "+i+', lang : '+lang+', subject : '+subject);
+		var positionsOrder = (i==0)?positionsStartOrder:(i==text.length-1)?positionsEndOrder:positionsMiddleOrder;
+		var positionIndex = 0;
 
-		// find new word
-		var response = dict.getRandomWord(text[i].toUpperCase(), lang, subject);
+
+		/*** Word Selection ***/
+
+		console.log("\nWord for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+subject+', position : '+positionsOrder[positionIndex]);
+		var response = dict.getRandomWord(text[i].toUpperCase(), lang, subject, positionsOrder[positionIndex]);
+		while(response.found == false && positionIndex < positionsOrder.length)
+		{
+			// couldn't find a word for this subject and position, we change the position
+			console.log("Word not found ...");
+			positionIndex++;
+			console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+subject+', position : '+positionsOrder[positionIndex]);
+			response = dict.getRandomWord(text[i].toUpperCase(), lang, subject, positionsOrder[positionIndex]);
+		}
+
 		if(response.found == false){
+			// response is still false, there is no word for this subject, we change the subject to Word.SUBJECT.BULLSHIT
 			console.log("Word not found ...");
 			if(subject == Word.SUBJECT.ALL){
+				// if the subject was ALL, we can't search anywhere else ...
 				alert(response.msg);
 				result = [];
 				break;	
 			}
-			// if we can't find the word, search it in bullshit
-			console.log("\nWord for "+text[i].toUpperCase()+", position : "+i+', lang : '+lang+', subject : '+Word.SUBJECT.BULLSHIT);
-			response = dict.getRandomWord(text[i].toUpperCase(), lang, Word.SUBJECT.BULLSHIT);
+			
+			positionIndex = 0;
+			console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+Word.SUBJECT.BULLSHIT+', position : '+positionsOrder[positionIndex]);
+			response = dict.getRandomWord(text[i].toUpperCase(), lang, Word.SUBJECT.BULLSHIT, positionsOrder[positionIndex]);
+			while(response.found == false && positionIndex < positionsOrder.length)
+			{
+				// couldn't find a word for this Word.SUBJECT.BULLSHIT and position, we change the position
+				console.log("Word not found ...");
+				positionIndex++;
+				console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+Word.SUBJECT.BULLSHIT+', position : '+positionsOrder[positionIndex]);
+				response = dict.getRandomWord(text[i].toUpperCase(), lang, Word.SUBJECT.BULLSHIT, positionsOrder[positionIndex]);
+			}
+
 			if(response.found == false){
-			console.log("Word not found ...");
+				console.log("Word not found ...");
 				alert(response.msg);
 				result = [];
 				break;	
 			}
 		}
+
+
 		var word = response.word;
 		dict.remove(word);
 		removedWords.push(word);
 		console.log(word);
 
 
-		// language logic
+		/*** Language Logic ***/
+
 		if (lang == "fr") {
 			if(i > 0){
 				// add preposition for 2+ word
