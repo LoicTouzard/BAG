@@ -194,7 +194,6 @@ var dict = {
 	}
 };
 
-// TODO : add prefered position, subject, ?
 // TODO : Structure the words data somewhere else ?
 /**
  * Contains aaaaaaaall the words, as a list. The words aren't indexed here.
