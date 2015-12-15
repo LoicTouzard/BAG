@@ -9,33 +9,36 @@
 	<body>
 	<!-- TODO enhance user experience x), make the acronym query customizable (lang for example, subject maybe too ? (later))-->
 	<div class="container-fluid">
-		<form id="form" class="form-horizontal" action="" autocomplete="off">
-			<input id="input" type="text">
-			<input type="submit" value="Acronymyze !">	
-			<p>Lang</p>
-			<div id="langs">
-				<label><input type="radio" name="lang" value="fr" checked="checked"> fr</label>
-				<label><input type="radio" name="lang" value="en"> en</label>
-			</div>
-			<p>Subject</p>
-			<div id="subjects">
-				<label><input type="radio" name="subject" value="0" checked="checked"> ALL</label>
-				<label><input type="radio" name="subject" value="2"> ASI</label>
-				<label><input type="radio" name="subject" value="3"> PLD</label>
-			</div>
-		</form>
-
-		<h2 id="result"></h2>
+		<div id="main-content">
+			<form id="form" class="form-horizontal" action="" autocomplete="off">
+				<input id="input" type="text" autofocus="autofocus" placeholder="BAG">
+				<input id="submit" type="submit" value="Acronymyze !">	
+				<div id="form-settings">
+					<p>Lang</p>
+					<div id="langs">
+						<label><input type="radio" name="lang" value="fr" checked="checked"> fr</label>
+						<label><input type="radio" name="lang" value="en"> en</label>
+					</div>
+					<p>Subject</p>
+					<div id="subjects">
+						<label><input type="radio" name="subject" value="0" checked="checked"> ALL</label>
+						<label><input type="radio" name="subject" value="2"> ASI</label>
+						<label><input type="radio" name="subject" value="3"> PLD</label>
+					</div>
+				</div>
+			</form>
+			<h2 id="result">Bullshit Acronym Generator</h2>
+		</div>
 	</div>
 		<script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
 		<script type="text/javascript" src="assets/js/main.js"></script>
 		<script>
 			$(function(){
-
+				$("#submit").hide();
 				// submit handler
 				$("#form").submit(
 					function(){
-						$("#result").text(
+						$("#result").html(
 							getAcronym(
 								$("#input").val().trim(),
 								$('input[name="lang"]:checked').val(),
@@ -45,6 +48,17 @@
 						return false;
 					}
 				);
+
+				$("#input").keyup(function(){
+					if($(this).val().length){
+						if(!$("#submit").is(":visible")){
+							$("#submit").fadeIn();
+						}
+					}
+					else{
+						$("#submit").fadeOut();
+					}
+				});
 			});
 		</script>
 	</body>

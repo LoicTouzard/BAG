@@ -366,6 +366,7 @@ var getRandomElement = function(array){
  * @return {String}      The word text meaning, letter by letter.
  */
 var getAcronym = function(text, lang, subject){
+	if(text.toUpperCase()=="BAG") return "Bullshit Acronym Generator";
 	var result = [];
 	var removedWords = [];
 	for (var i = 0; i < text.length; i++) {

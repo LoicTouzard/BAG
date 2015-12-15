@@ -1,3 +1,7 @@
+.form{
+	position : relative;
+}
+
 #input{
 	width : 75%;
 	display: block;
@@ -5,7 +9,7 @@
 	margin-top: 100px;
 	background : transparent;
 	border:none;
-	border-bottom : 2px solid;
+	/*border-bottom : 2px dotted;*/
 	border-bottom-color: #BDBDBD;
 	color : white;
 	text-align: center;
@@ -14,11 +18,25 @@
 }
 
 #input:focus, #input:active{
-	border-bottom-color: white;
+	/*border-bottom-color: white;*/
+}
+
+#submit{
+	margin : auto;
+	display: block;
 }
 
 #result{
 	text-align : center;
 	font-size: 3em;
-		
+}
+
+
+#main-content{
+}
+
+#form-settings{
+	position: absolute;
+	right : 15px;
+	bottom: 15px;
 }
