@@ -319,6 +319,8 @@ var words = [
 	new Word("Modèle", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "du "),
 	new Word("Model", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 // N
+	new Word("Normalisation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.BULLSHIT], "de "),
+	new Word("Normalization", "en", [Word.SUBJECT.ASI, Word.SUBJECT.BULLSHIT]),
 	new Word("Natif(ve)", "fr", [Word.SUBJECT.BULLSHIT], "", "adjective"),
 	new Word("Native", "en", [Word.SUBJECT.BULLSHIT], "", "adjective"),
 // O
@@ -326,6 +328,8 @@ var words = [
 	new Word("Object", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Orienté(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
 	new Word("Oriented", "en", [Word.SUBJECT.ASI], "", "adjective"),
+	new Word("Organisation", "fr", [Word.SUBJECT.PLD], "d'", "noun"),
+	new Word("Organization", "en", [Word.SUBJECT.PLD], "", "noun"),
 // P	
 	new Word("Plan", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
 	new Word("Plan", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
