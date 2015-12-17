@@ -1,3 +1,11 @@
+var getKeyByValue = function(value, array){
+	for( var i in array){
+		if(array[i] == value){
+			return i;
+		}
+	}
+	return null;
+}
 /**
  * Object Word
  * @param {String} value       The word as String
@@ -39,6 +47,7 @@ function Word(value, lang, subjects, preposition, type, position){
 	this.position = position;
 	this.subjects = subjects;
 	this.subjects.push(Word.SUBJECT.ALL);
+
 	this.first = function(){
 		return value[0].toUpperCase();
 	};
@@ -83,6 +92,14 @@ Word.POSITION = {ANYWHERE:1, START:2, MIDDLE:3, END:4};
  * @type {Object}
  */
 Word.SUBJECT = {ALL:0, BULLSHIT:1, ASI:2, PLD:3}; 
+
+Word.constructFromJson = function(json){
+	var arraySubjects = [];
+	for(var i in json.subjects){
+		arraySubjects.push(Word.SUBJECT[i]);
+	}
+	return new Word(json.value, json.lang, arraySubjects, json.preposition, json.type, Word.POSITION[json.position]);
+};
 
 /**
  * Determine if an object is contained in an array (by reference)
@@ -153,21 +170,21 @@ var dict = {
 	insert: function(wordToInsert){
 		if(wordToInsert instanceof Word){
 			// if the lang doesn't exists, create the array
-			if(!words[wordToInsert.lang])
-				words[wordToInsert.lang] = [];
+			if(!this.words[wordToInsert.lang])
+				this.words[wordToInsert.lang] = [];
 			for (var i = wordToInsert.subjects.length - 1; i >= 0; i--) {
 				// if the subject doesn't exists, create the array
-				if(!words[wordToInsert.lang][wordToInsert.subjects[i]])
-					words[wordToInsert.lang][wordToInsert.subjects[i]] = [];
+				if(!this.words[wordToInsert.lang][wordToInsert.subjects[i]])
+					this.words[wordToInsert.lang][wordToInsert.subjects[i]] = [];
 				// if the letter doesn't exists, create the array
-				if(!words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()])
-					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()] = [];
+				if(!this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()])
+					this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()] = [];
 				// if the position doesn't exists, create the array
-				if(!words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position])
-					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position] = [];
+				if(!this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position])
+					this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position] = [];
 				// if the Word isn't already inserted, insert it
-				if(!containsWord(words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position], wordToInsert))
-					words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position].push(wordToInsert);
+				if(!containsWord(this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position], wordToInsert))
+					this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position].push(wordToInsert);
 			};
 		}
 	},
@@ -178,12 +195,12 @@ var dict = {
 	 */
 	remove: function(wordToRemove){
 		if(wordToRemove instanceof Word){
-			if(	words[wordToRemove.lang]){
+			if(	this.words[wordToRemove.lang]){
 				for (var i = wordToRemove.subjects.length - 1; i >= 0; i--) {
-					if (words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()]
-						&& words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position]
-						&& containsWord(words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position], wordToRemove)) {
-						var wordArray = words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position];
+					if (this.words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()]
+						&& this.words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position]
+						&& containsWord(this.words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position], wordToRemove)) {
+						var wordArray = this.words[wordToRemove.lang][wordToRemove.subjects[i]][wordToRemove.first()][wordToRemove.position];
 						var i = wordArray.length
 						while(i--){
 							if (wordArray[i].equals(wordToRemove)) {
@@ -208,27 +225,26 @@ var dict = {
 	 *                                   				 , if false, the attribute (String)'msg' exists and contains the error message
 	 */
 	getRandomWord: function(letter, lang, subject, position){
-		if(!words[lang]){
+		if(!this.words[lang]){
 			return {found: false, msg: "There is no word for the language '"+lang+"' available."};
 		}
-		if (!words[lang][subject]) {
+		if (!this.words[lang][subject]) {
 			return {found: false, msg: "There is no word for the subject '"+subject+"' available."};
 		}
-		if (!words[lang][subject][letter]) {
+		if (!this.words[lang][subject][letter]) {
 			return {found: false, msg: "There is no word starting with '"+letter+"' available."};
 		}
-		if (!words[lang][subject][letter][position]) {
+		if (!this.words[lang][subject][letter][position]) {
 			// change this error msg ?
 			return {found: false, msg: "There is no word starting with '"+letter+"' available."};
 		}
-		else if(words[lang][subject][letter][position].length == 0){
+		else if(this.words[lang][subject][letter][position].length == 0){
 			return {found: false, msg: "There is not enough words starting with '"+letter+"' available."};
 		}
-		return {found: true, word: words[lang][subject][letter][position][getRandomIndex(words[lang][subject][letter][position].length)]};
+		return {found: true, word: this.words[lang][subject][letter][position][getRandomIndex(this.words[lang][subject][letter][position].length)]};
 	}
 };
 
-// TODO : Structure the words data somewhere else ?
 /**
  * Contains aaaaaaaall the words, as a list. The words aren't indexed here.
  * NB IMPORTANT : If  you want to add some words, please follow these rules : 
@@ -236,154 +252,7 @@ var dict = {
  * 		- Add singular words, the number gestion will be added later.
  * 		- Write them in the right place. In the letter they belong.
  * 		- Add only Words that can fit easily in almost ANY acronym, not only the one you have in mind.
- * 
- * @type {Array}
  */
-var words = [
-// A
-	new Word("Architecture", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
-	new Word("Architecture", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
-	new Word("Assurance", "fr", [Word.SUBJECT.PLD], "d'"),
-	new Word("Activité", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
-	new Word("Activity", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Application", "fr", [Word.SUBJECT.ASI], "d'"),
-	new Word("Application", "en", [Word.SUBJECT.ASI]),
-	new Word("Applicatif(ve)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Applicative", "en", [Word.SUBJECT.ASI], "", "adjective"),
-// B
-	new Word("Business", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Bloc", "fr", [Word.SUBJECT.ASI], "en "),
-	new Word("Brut(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-// C
-	new Word("Cas", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
-	new Word("Case", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Conception", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
-	new Word("Comité", "fr", [Word.SUBJECT.PLD], "de "),
-	new Word("Conception", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Client", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Customer", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Chain", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Chaîne", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
-// D
-	new Word("Détaillé(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Development", "en", [Word.SUBJECT.ASI]),
-	new Word("Développement", "fr", [Word.SUBJECT.ASI], "de "),
-	new Word("Direction", "fr", [Word.SUBJECT.PLD], "de "),
-//	new Word("Données", "fr", [Word.SUBJECT.ASI], "des "),
-	new Word("Donnée", "fr", [Word.SUBJECT.ASI], "de "),
-	new Word("Data", "en", [Word.SUBJECT.ASI]),
-	new Word("Diagramme", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de ", Word.POSITION.START),
-	new Word("Diagram", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", Word.POSITION.END),
-	// new Word("Design", "en", "noun"),
-// E
-	new Word("Economy", "en", [Word.SUBJECT.PLD]),
-	new Word("Economie", "fr", [Word.SUBJECT.PLD], "d'"),
-	new Word("Employee", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
-	new Word("Employé", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI], "d'"),
-	new Word("Entreprise", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI], "d'"),
-	new Word("Enterprise", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
-	new Word("Environment", "en", [Word.SUBJECT.PLD]),
-	new Word("Environnement", "fr", [Word.SUBJECT.PLD], "d'"),
-	new Word("Entity", "en", [Word.SUBJECT.ASI]),
-	new Word("Entité", "fr", [Word.SUBJECT.ASI], "d'"),
-	new Word("Etat", "fr", [Word.SUBJECT.ASI], "d'"),
-// F
-	new Word("Fonctionnel(le)", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
-	new Word("Fonctional", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI],"", "adjective"),
-	new Word("Filiale", "fr", [Word.SUBJECT.PLD]),
-// G
-	new Word("Gestion", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
-// H
-	new Word("Hiérarchie", "fr", [Word.SUBJECT.PLD], "de "),
-	new Word("Hierarchy", "en", [Word.SUBJECT.PLD]),
-// I
-	new Word("Interface", "fr", [Word.SUBJECT.ASI], "d'", "noun", Word.POSITION.START),
-	new Word("Interface", "en", [Word.SUBJECT.ASI], "", "noun", Word.POSITION.END),
-	new Word("Infrastructure", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'", "noun"),
-	new Word("Infrastructure", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun"),
-// J
-// K
-// L
-	new Word("Local(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Local", "en", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Logique", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Logic", "en", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Leadership", "en", [Word.SUBJECT.PLD]),
-// M
-	new Word("Management", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.END),
-	new Word("Maîtrise", "fr", [Word.SUBJECT.PLD], "de ", "noun", Word.POSITION.START),
-	new Word("Marge", "fr", [Word.SUBJECT.PLD], "de ", "noun", Word.POSITION.START),
-	new Word("Métier", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Method", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.END),
-	new Word("Méthode", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
-	new Word("Modèle", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "du "),
-	new Word("Model", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-// N
-	new Word("Normalisation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.BULLSHIT], "de "),
-	new Word("Normalization", "en", [Word.SUBJECT.ASI, Word.SUBJECT.BULLSHIT]),
-	new Word("Natif(ve)", "fr", [Word.SUBJECT.BULLSHIT], "", "adjective"),
-	new Word("Native", "en", [Word.SUBJECT.BULLSHIT], "", "adjective"),
-// O
-	new Word("Objet", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
-	new Word("Object", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Orienté(e)", "fr", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Oriented", "en", [Word.SUBJECT.ASI], "", "adjective"),
-	new Word("Organisation", "fr", [Word.SUBJECT.PLD], "d'", "noun"),
-	new Word("Organization", "en", [Word.SUBJECT.PLD], "", "noun"),
-// P	
-	new Word("Plan", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Plan", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Planning", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
-	new Word("Planification", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
-	new Word("Process", "en", [Word.SUBJECT.PLD, Word.SUBJECT.ASI]),
-	new Word("Processus", "fr", [Word.SUBJECT.PLD, Word.SUBJECT.ASI], "de "),
-// Q
-	new Word("Quality", "en", [Word.SUBJECT.PLD]),
-	new Word("Qualité", "fr", [Word.SUBJECT.PLD]),
-// R
-	new Word("Relationship", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Relation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de la "),
-	new Word("Resource", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Ressource", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "de "),
-//	new Word("Ressources", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "des "),
-//	new Word("Ressources", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Responsable", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "", "noun", Word.POSITION.START),
-// S
-	new Word("Service", "en", [Word.SUBJECT.ASI]),
-	new Word("Service", "fr", [Word.SUBJECT.ASI], "de "),
-	new Word("Séquence", "fr", [Word.SUBJECT.ASI], "de "),
-	new Word("Sequence", "en", [Word.SUBJECT.ASI]),
-	new Word("Système", "fr", [Word.SUBJECT.ASI]),
-	new Word("System", "en", [Word.SUBJECT.ASI]),
-	new Word("State", "en", [Word.SUBJECT.ASI]),
-	new Word("Supply", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-// T
-	new Word("Transaction", "fr", [Word.SUBJECT.PLD], "de "),
-// U
-	new Word("Utilisation", "fr", [Word.SUBJECT.ASI, Word.SUBJECT.PLD], "d'"),
-	new Word("Use", "en", [Word.SUBJECT.ASI, Word.SUBJECT.PLD]),
-	new Word("Urbanisme", "fr", [Word.SUBJECT.ASI], "d'"),
-	new Word("Urbanism", "en", [Word.SUBJECT.ASI]),
-	new Word("Urbanisation", "fr", [Word.SUBJECT.ASI], "d'", "adjective"),
-	new Word("Urbanisation", "en", [Word.SUBJECT.ASI], "", "adjective"),
-// V
-
-// W
-	new Word("Web", "fr", [Word.SUBJECT.ASI], "du "),
-	new Word("Web", "en", [Word.SUBJECT.ASI]),
-// X
-// Y
-// Z
-];
- 
-
-
-
-
-// Indexation
-for (var i = words.length - 1; i >= 0; i--) {
-	dict.insert(words[i]);
-};
 
 
 /**
@@ -424,14 +293,14 @@ var getAcronym = function(text, lang, subject){
 
 		/*** Word Selection ***/
 
-		console.log("\nWord for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+subject+', position : '+positionsOrder[positionIndex]);
+		console.log("\nWord for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+getKeyByValue(subject, Word.SUBJECT)+', position : '+getKeyByValue(positionsOrder[positionIndex], Word.POSITION));
 		var response = dict.getRandomWord(text[i].toUpperCase(), lang, subject, positionsOrder[positionIndex]);
 		while(response.found == false && positionIndex < positionsOrder.length)
 		{
 			// couldn't find a word for this subject and position, we change the position
 			console.log("Word not found ...");
 			positionIndex++;
-			console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+subject+', position : '+positionsOrder[positionIndex]);
+			console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+getKeyByValue(subject, Word.SUBJECT)+', position : '+getKeyByValue(positionsOrder[positionIndex], Word.POSITION));
 			response = dict.getRandomWord(text[i].toUpperCase(), lang, subject, positionsOrder[positionIndex]);
 		}
 
@@ -446,14 +315,14 @@ var getAcronym = function(text, lang, subject){
 			}
 			
 			positionIndex = 0;
-			console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+Word.SUBJECT.BULLSHIT+', position : '+positionsOrder[positionIndex]);
+			console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+getKeyByValue(Word.SUBJECT.BULLSHIT, Word.SUBJECT)+', position : '+getKeyByValue(positionsOrder[positionIndex], Word.POSITION));
 			response = dict.getRandomWord(text[i].toUpperCase(), lang, Word.SUBJECT.BULLSHIT, positionsOrder[positionIndex]);
 			while(response.found == false && positionIndex < positionsOrder.length)
 			{
 				// couldn't find a word for this Word.SUBJECT.BULLSHIT and position, we change the position
 				console.log("Word not found ...");
 				positionIndex++;
-				console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+Word.SUBJECT.BULLSHIT+', position : '+positionsOrder[positionIndex]);
+				console.log("Word for "+text[i].toUpperCase()+", index : "+i+', lang : '+lang+', subject : '+getKeyByValue(Word.SUBJECT.BULLSHIT, Word.SUBJECT)+', position : '+getKeyByValue(positionsOrder[positionIndex], Word.POSITION));
 				response = dict.getRandomWord(text[i].toUpperCase(), lang, Word.SUBJECT.BULLSHIT, positionsOrder[positionIndex]);
 			}
 
@@ -493,3 +362,14 @@ var getAcronym = function(text, lang, subject){
 	}
 	return result.join(" ");
 }
+
+
+
+// Load Words
+
+$.getJSON( "data/words.json", function( json ) {
+	// Indexation
+	for (var i = json.length - 1; i >= 0; i--) {
+		dict.insert(Word.constructFromJson(json[i]));
+	};
+});
