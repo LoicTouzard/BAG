@@ -151,7 +151,7 @@ var removeWord = function(array, word) {
 }
 
 /**
- * Dictionary, that contains the indexed words
+ * Dictionary, that contains the indexed words and some utility functions
  * @type {Object}
  */
 var dict = {
