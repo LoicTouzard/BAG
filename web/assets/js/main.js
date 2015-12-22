@@ -83,7 +83,7 @@ function Word(value, lang, subjects, preposition, type, position){
  * Use Word.POSITION.END when the word can only be placed at the end of the word
  * @type {Object}
  */
-Word.POSITION = {ANYWHERE:1, START:2, MIDDLE:3, END:4};
+Word.POSITION = {ANYWHERE:"ANY", START:"START", MIDDLE:"MID", END:"END"};
 /**
  * The available subjects for Words.
  * Don't use Word.SUBJECT.ALL, it is automatically added to every created Word.
@@ -91,13 +91,13 @@ Word.POSITION = {ANYWHERE:1, START:2, MIDDLE:3, END:4};
  * If no word are found for a given subject, we can search in bullshit to find one.
  * @type {Object}
  */
-Word.SUBJECT = {ALL:0, BULLSHIT:1, ASI:2, PLD:3}; 
+Word.SUBJECT = {ALL:"ALL", BULLSHIT:"BULLSHIT", ASI:"ASI", PLD:"PLD"}; 
 
 Word.constructFromJson = function(json){
 	var arraySubjects = [];
-	for(var i in json.subjects){
-		arraySubjects.push(Word.SUBJECT[i]);
-	}
+	for (var i = 0; i < json.subjects.length; i++) {
+		arraySubjects.push(Word.SUBJECT[json.subjects[i]]);
+	};
 	return new Word(json.value, json.lang, arraySubjects, json.preposition, json.type, Word.POSITION[json.position]);
 };
 
@@ -171,14 +171,14 @@ var dict = {
 		if(wordToInsert instanceof Word){
 			// if the lang doesn't exists, create the array
 			if(!this.words[wordToInsert.lang])
-				this.words[wordToInsert.lang] = [];
-			for (var i = wordToInsert.subjects.length - 1; i >= 0; i--) {
+				this.words[wordToInsert.lang] = {};
+			for (var i in wordToInsert.subjects) {
 				// if the subject doesn't exists, create the array
 				if(!this.words[wordToInsert.lang][wordToInsert.subjects[i]])
-					this.words[wordToInsert.lang][wordToInsert.subjects[i]] = [];
+					this.words[wordToInsert.lang][wordToInsert.subjects[i]] = {};
 				// if the letter doesn't exists, create the array
 				if(!this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()])
-					this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()] = [];
+					this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()] = {}
 				// if the position doesn't exists, create the array
 				if(!this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position])
 					this.words[wordToInsert.lang][wordToInsert.subjects[i]][wordToInsert.first()][wordToInsert.position] = [];
@@ -372,4 +372,5 @@ $.getJSON( "data/words.json", function( json ) {
 	for (var i = json.length - 1; i >= 0; i--) {
 		dict.insert(Word.constructFromJson(json[i]));
 	};
+	$("body").trigger("words-loaded");
 });

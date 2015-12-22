@@ -8,7 +8,6 @@
 		<link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
 	</head>
 	<body>
-		<!-- TODO enhance user experience x), make the acronym query customizable (lang for example, subject maybe too ? (later))-->
 		<div class="container-fluid">
 			<div id="main-content">
 				<form id="form" class="form-horizontal" action="" autocomplete="off">
@@ -22,9 +21,9 @@
 						</div>
 						<p>Subject</p>
 						<div id="subjects">
-							<label><input type="radio" name="subject" value="0" checked="checked"> ALL</label>
-							<label><input type="radio" name="subject" value="2"> ASI</label>
-							<label><input type="radio" name="subject" value="3"> PLD</label>
+							<label><input type="radio" name="subject" value="ALL" checked="checked"> ALL</label>
+							<label><input type="radio" name="subject" value="ASI"> ASI</label>
+							<label><input type="radio" name="subject" value="PLD"> PLD</label>
 						</div>
 					</div>
 				</form>
@@ -62,6 +61,11 @@
 					else{
 						$("#submit").fadeOut();
 					}
+				});
+
+				$("#main-content").hide();
+				$("body").on("words-loaded", function(){
+					$("#main-content").fadeIn();
 				});
 			});
 		</script>
