@@ -18,7 +18,7 @@
 		<script>
 			$(function(){
 				var createListTitle = function(name){
-					return $('<h3>'+name+'</h3>');
+					return $('<h6>'+name+'</h6>');
 				};
 
 				var createList = function(name){
@@ -32,11 +32,9 @@
 
 //TODO :  a way to refactor this function with a recusrsive one ? Or callback one ? Sme patterns are repeating.
 				var createExplorer = function(){
-					var $explorer = $("#explorer");
-
 					var langs = dict.words;
-					var $langListTitle = createListTitle("Words");
-					var $langsList = createList("words");
+					var $langsListTitle = createListTitle("Explorer");
+					var $langsList = createList("explorer");
 					// Langs
 					for(var lang in langs){
 						var $langItem = createItem("lang");
@@ -84,14 +82,35 @@
 						$langItem.append($subjectsList);
 						$langsList.append($langItem);
 					}
-					$explorer.append($langListTitle);
-					$explorer.append($langsList);
+					return $langsListTitle.add($langsList);
 				};
 
+				var countWords = function(element){
+					return $(element).find(".word").length;
+				};
 
 				$("body").on("words-loaded", function(){
-					createExplorer();
+					var $explorer = $("#explorer");
+					var $explorerContent = createExplorer();
+					$explorerContent.find("ul").hide();
+					$explorerContent.find("li").toggleClass("closed");
+					
+					$explorerContent.find("li").click(function(e){
+						e.stopPropagation();
+						$(this)
+							.toggleClass("closed")
+							.find("ul").first()
+								.toggle();
+						var $child = $(this).find("ul").first().children("li");
+						if ($child.length == 1) {
+							$child.click();
+						};
+					});
+
+					$explorer.append($explorerContent);
 				});
+
+
 
 			});
 		</script>
