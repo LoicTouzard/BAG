@@ -267,7 +267,8 @@
         "subjects":[
             "PLD",
             "ASI"
-        ]
+        ],
+        "position":"END"
     },
     {
         "value":"Employé",
@@ -276,7 +277,8 @@
             "PLD",
             "ASI"
         ],
-        "preposition":"d'"
+        "preposition":"d'",
+        "position":"START"
     },
     {
         "value":"Entreprise",
