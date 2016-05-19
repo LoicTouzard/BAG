@@ -809,6 +809,13 @@
         "preposition":"de "
     },
     {
+        "value":"Transaction",
+        "lang":"en",
+        "subjects":[
+            "PLD"
+        ]
+    },
+    {
         "value":"Utilisation",
         "lang":"fr",
         "subjects":[
