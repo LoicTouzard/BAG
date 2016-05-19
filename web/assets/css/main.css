@@ -18,6 +18,7 @@
 }
 
 #input:focus, #input:active{
+	outline: none;
 	/*border-bottom-color: white;*/
 }
 
