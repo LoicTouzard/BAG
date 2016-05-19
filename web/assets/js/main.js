@@ -13,7 +13,7 @@ var getKeyByValue = function(value, array){
  * @param {Array} subjects 	   The subjects where the Word belong. -- default is []
  * @param {String} preposition The preposition which fit the word if necessary : "de", "d'", ... -- default is ""
  * @param {String} type        The Word's type : "noun", "adjective", ... -- default is "noun"
- * @param {Integer} position   The prefered position of the word in acronyms : Word.POSITION.ANYWHERE is anywhere, Word.POSITION.START is start, Word.POSITION.MIDDLE is middle, Word.POSITION is end. -- default is Word.POSITION.ANYWHERE
+ * @param {String} position   The prefered position of the word in acronyms : Word.POSITION.ANYWHERE is anywhere, Word.POSITION.START is start, Word.POSITION.MIDDLE is middle, Word.POSITION is end. -- default is Word.POSITION.ANYWHERE
  *                             If The type is "adjective" the default position depends of the lang.
  */
 function Word(value, lang, subjects, preposition, type, position){
@@ -366,11 +366,12 @@ var getAcronym = function(text, lang, subject){
 
 
 // Load Words
-
-$.getJSON( "data/words.json", function( json ) {
-	// Indexation
-	for (var i = json.length - 1; i >= 0; i--) {
-		dict.insert(Word.constructFromJson(json[i]));
-	};
-	$("body").trigger("words-loaded");
+$(function(){
+	$.getJSON( "data/words.json", function( json ) {
+		// Indexation
+		for (var i = json.length - 1; i >= 0; i--) {
+			dict.insert(Word.constructFromJson(json[i]));
+		};
+		$("body").trigger("words-loaded");
+	});
 });
