@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>BAG - Statistics</title>
+		<link rel="stylesheet" href="https://bootswatch.com/slate/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+		<link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+	</head>
+	<body>
+		<div class="container-fluid">
+			<section id="explorer">
+			</section>
+		</div>
+
+		<script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="assets/js/main.js"></script>
+		<script>
+			$(function(){
+				var createListTitle = function(name){
+					return $('<h6>'+name+'</h6>');
+				};
+
+				var createList = function(name){
+					return $('<ul id="explorer-'+name+'"></ul>');
+				};
+
+				var createItem = function(name){
+					return $('<li class="'+name+'"></li>');
+				};
+
+
+//TODO :  a way to refactor this function with a recusrsive one ? Or callback one ? Sme patterns are repeating.
+				var createExplorer = function(){
+					var langs = dict.words;
+					var $langsListTitle = createListTitle("Explorer");
+					var $langsList = createList("explorer");
+					// Langs
+					for(var lang in langs){
+						var $langItem = createItem("lang");
+						var subjects = langs[lang];
+						var $subjectsListTitle = createListTitle("Lang : "+lang);
+						var $subjectsList = createList("langs");
+						// Subjects
+						for(var subject in subjects){
+							var $subjectItem = createItem("subject");
+							var letters = subjects[subject];
+							var $lettersListTitle = createListTitle("Subject : "+subject);
+							var $lettersList = createList("subjects");
+							// Letters
+							for(var letter in letters){
+								var $letterItem = createItem("letter");
+								var positions = letters[letter];
+								var $positionsListTitle = createListTitle("Letter : "+letter);
+								var $positionsList = createList("letters");
+								// Positions
+								for(var position in positions){
+									var $positionItem = createItem("position");
+									var words = positions[position];
+									var $wordsListTitle = createListTitle("Position : "+position);
+									var $wordsList = createList("positions");
+									// Words
+									for(var word in words){
+										var $wordItem = createItem("word");
+										var wordObject = words[word];
+										$wordItem.attr("data-value", wordObject.value).text(wordObject.value);
+										$wordsList.append($wordItem);
+									}	
+									$positionItem.append($wordsListTitle);
+									$positionItem.append($wordsList);
+									$positionsList.append($positionItem);
+								}
+								$letterItem.append($positionsListTitle);
+								$letterItem.append($positionsList);
+								$lettersList.append($letterItem);
+							}
+							$subjectItem.append($lettersListTitle);
+							$subjectItem.append($lettersList);
+							$subjectsList.append($subjectItem);
+						}
+						$langItem.append($subjectsListTitle);
+						$langItem.append($subjectsList);
+						$langsList.append($langItem);
+					}
+					return $langsListTitle.add($langsList);
+				};
+
+				var countWords = function(element){
+					return $(element).find(".word").length;
+				};
+
+				$("body").on("words-loaded", function(){
+					var $explorer = $("#explorer");
+					var $explorerContent = createExplorer();
+					$explorerContent.find("ul").hide();
+					$explorerContent.find("li").toggleClass("closed");
+					
+					$explorerContent.find("li").click(function(e){
+						e.stopPropagation();
+						$(this)
+							.toggleClass("closed")
+							.find("ul").first()
+								.toggle();
+						var $child = $(this).find("ul").first().children("li");
+						if ($child.length == 1) {
+							$child.click();
+						};
+					});
+
+					$explorer.append($explorerContent);
+				});
+
+
+
+			});
+		</script>
+	</body>
+</html>
