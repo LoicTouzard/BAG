@@ -13,18 +13,25 @@
 			<div id="main-content">
 				<form id="form" class="form-horizontal" action="" autocomplete="off">
 					<input id="input" type="text" autofocus="autofocus" placeholder="BAG">
-					<input id="submit" type="submit" value="Acronymyze !">	
-					<div id="form-settings">
-						<p>Lang</p>
-						<div id="langs">
-							<label><input type="radio" name="lang" value="fr" checked="checked"> fr</label>
-							<label><input type="radio" name="lang" value="en"> en</label>
-						</div>
-						<p>Subject</p>
-						<div id="subjects">
-							<label><input type="radio" name="subject" value="ALL" checked="checked"> ALL</label>
-							<label><input type="radio" name="subject" value="ASI"> ASI</label>
-							<label><input type="radio" name="subject" value="PLD"> PLD</label>
+					<input id="submit" type="submit" value="Acronymyze !" class="btn btn-default">
+					<div class="row">
+						
+						<div id="form-settings" >
+							<div class="form-group col-xs-6 text-center">
+								<span>Lang</span>
+								<div id="langs">
+									<label><input type="radio" name="lang" value="fr" checked="checked"> fr</label>
+									<label><input type="radio" name="lang" value="en"> en</label>
+								</div>
+							</div>
+							<div class="form-group col-xs-6 text-center">
+								<span>Subject</span>
+								<div id="subjects">
+									<label><input type="radio" name="subject" value="ALL" checked="checked"> ALL</label>
+									<label><input type="radio" name="subject" value="ASI"> ASI</label>
+									<label><input type="radio" name="subject" value="PLD"> PLD</label>
+								</div>
+							</div>
 						</div>
 					</div>
 				</form>
