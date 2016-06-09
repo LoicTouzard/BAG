@@ -1,3 +1,3 @@
 # BAG
 Bullshit Acronym Generator  
-[Live Demo](http://loictouzard.github.io/BAG/web/)
+[Live Demo](https://loictouzard.github.io/BAG/web/)
